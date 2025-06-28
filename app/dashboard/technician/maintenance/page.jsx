@@ -13,8 +13,6 @@ import { useTranslation } from "@/lib/translations"
 export default function MaintenancePage() {
   const [user, setUser] = useState(null)
   const [maintenance, setMaintenance] = useState([])
-  const [machines, setMachines] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
   const [completingId, setCompletingId] = useState(null)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
@@ -35,80 +33,42 @@ export default function MaintenancePage() {
     }
 
     setUser(parsedUser)
-    loadMaintenanceData()
+    loadMaintenance()
   }, [router])
 
-  const loadMaintenanceData = async () => {
+  const loadMaintenance = async () => {
     try {
-      const [maintenanceData, machinesData] = await Promise.all([api.getMaintenanceSchedule(), api.getMachines()])
-
-      setMaintenance(maintenanceData)
-      setMachines(machinesData)
+      const data = await api.getMaintenanceSchedule()
+      setMaintenance(data)
     } catch (error) {
-      console.error("Error loading maintenance data:", error)
+      console.error("Error loading maintenance:", error)
       setError("Erreur lors du chargement des données de maintenance")
-    } finally {
-      setIsLoading(false)
     }
   }
 
-  const handleMarkComplete = async (maintenanceId) => {
-    setCompletingId(maintenanceId)
+  const handleMarkComplete = async (id) => {
+    setCompletingId(id)
     setError("")
     setSuccess("")
 
     try {
-      await api.updateMaintenanceStatus(maintenanceId, "Completed")
-      setSuccess("Maintenance marquée comme terminée")
-      
-      // Update the local state to reflect the change
-      setMaintenance(prev => prev.map(item => 
-        item.id === maintenanceId 
+      await api.updateMaintenanceSchedule(id, { status: "Completed", completedAt: new Date().toISOString() })
+      setMaintenance(maintenance.map(item => 
+        item.id === id 
           ? { ...item, status: "Completed", completedAt: new Date().toISOString() }
           : item
       ))
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(""), 3000)
+      setSuccess("Maintenance marquée comme terminée")
     } catch (error) {
-      console.error("Error marking maintenance as complete:", error)
       setError("Erreur lors de la mise à jour")
-      
-      // Clear error message after 3 seconds
-      setTimeout(() => setError(""), 3000)
+      console.error("Error updating maintenance:", error)
     } finally {
       setCompletingId(null)
     }
   }
 
-  const getMachineName = (machineId) => {
-    const machine = machines.find((m) => m.id === machineId)
-    return machine ? machine.name : machineId
-  }
-
-  const getMaintenanceTasks = (type) => {
-    switch (type) {
-      case "3-month":
-        return ["Replace filters / Clean if necessary", "Check motorized clamps", "Tighten electrical connections"]
-      case "6-month":
-        return [
-          "Full calibration with calibrated tools",
-          "Inspect hydraulic components (leaks, corrosion, deposits)",
-          "Firmware updates via Fresenius service",
-        ]
-      case "yearly":
-        return [
-          "Replace hydraulic seals and pump wheels",
-          "Electrical safety tests (ground resistance, leakage current)",
-          "Maintenance report update and archiving",
-        ]
-      default:
-        return []
-    }
-  }
-
-  if (!user || isLoading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+  if (!user) {
+    return <div>Chargement...</div>
   }
 
   return (
@@ -168,7 +128,7 @@ export default function MaintenancePage() {
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle>{t('maintenance.title')}</CardTitle>
@@ -177,55 +137,40 @@ export default function MaintenancePage() {
               <div className="space-y-4">
                 {maintenance.map((item) => (
                   <div key={item.id} className="border rounded-lg p-4">
-                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold">{getMachineName(item.machineId)}</h3>
-                          <Badge variant="outline">{item.type}</Badge>
-                          <Badge variant={item.status === "Pending" ? "destructive" : "default"}>{item.status === "Completed" ? t('maintenance.completed') : t('maintenance.pending')}</Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">
-                          <strong>Due Date:</strong> {item.dueDate}
-                        </p>
-                        {item.status === "Completed" && item.completedAt && (
-                          <p className="text-sm text-green-600 mb-2">
-                            <strong>Completed:</strong> {new Date(item.completedAt).toLocaleDateString()}
-                          </p>
-                        )}
-                        <div className="text-sm text-gray-600">
-                          <strong>Tasks:</strong>
-                          <ul className="list-disc list-inside mt-1 ml-4">
-                            {getMaintenanceTasks(item.type).map((task, index) => (
-                              <li key={index}>{task}</li>
-                            ))}
-                          </ul>
-                        </div>
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold">{item.machine?.name || "Machine inconnue"}</h3>
+                        <p className="text-sm text-gray-600">{item.type}</p>
                       </div>
-                      <div className="flex gap-2">
-                        {item.status === "Pending" ? (
-                          <Button 
-                            size="sm" 
-                            variant="outline"
-                            onClick={() => handleMarkComplete(item.id)}
-                            disabled={completingId === item.id}
-                          >
-                            {completingId === item.id ? t('interventions.marking') : t('interventions.markComplete')}
-                          </Button>
-                        ) : (
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            disabled
-                            className="text-green-600"
-                          >
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            {t('maintenance.completed')}
-                          </Button>
-                        )}
-                        <Button size="sm" className="bg-teal-500 hover:bg-teal-600">
-                          {t('interventions.startMaintenance')}
+                      <Badge variant={item.status === "Completed" ? "default" : "secondary"}>
+                        {item.status === "Completed" ? t('maintenance.completed') : t('maintenance.pending')}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{item.tasks}</p>
+                    <div className="flex gap-2">
+                      {item.status === "Pending" ? (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => handleMarkComplete(item.id)}
+                          disabled={completingId === item.id}
+                        >
+                          {completingId === item.id ? t('interventions.marking') : t('interventions.markComplete')}
                         </Button>
-                      </div>
+                      ) : (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          disabled
+                          className="text-green-600"
+                        >
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          {t('maintenance.completed')}
+                        </Button>
+                      )}
+                      <Button size="sm" className="bg-teal-500 hover:bg-teal-600">
+                        {t('interventions.startMaintenance')}
+                      </Button>
                     </div>
                   </div>
                 ))}

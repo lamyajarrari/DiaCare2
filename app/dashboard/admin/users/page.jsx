@@ -89,7 +89,7 @@ export default function UsersPage() {
       setFilteredUsers(usersData)
     } catch (error) {
       console.error("Error loading users:", error)
-      setError("Failed to load users")
+      setError("Échec du chargement des utilisateurs")
     } finally {
       setIsLoading(false)
     }
@@ -99,21 +99,21 @@ export default function UsersPage() {
     const errors = {}
     
     if (!formData.name.trim()) {
-      errors.name = "Name is required"
+      errors.name = "Le nom est requis"
     }
     
     if (!formData.email.trim()) {
-      errors.email = "Email is required"
+      errors.email = "L'email est requis"
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Email is invalid"
+      errors.email = "L'email n'est pas valide"
     }
     
     if (!formData.role) {
-      errors.role = "Role is required"
+      errors.role = "Le rôle est requis"
     }
     
     if (!isEdit && !formData.password.trim()) {
-      errors.password = "Password is required"
+      errors.password = "Le mot de passe est requis"
     }
     
     if (isEdit) {
@@ -138,7 +138,7 @@ export default function UsersPage() {
 
     try {
       await api.createUser(newUser)
-      setSuccess("User created successfully!")
+      setSuccess("Utilisateur créé avec succès !")
       setIsDialogOpen(false)
       setNewUser({ name: "", email: "", role: "", password: "" })
       setFormErrors({})
@@ -148,7 +148,7 @@ export default function UsersPage() {
       }, 1000)
     } catch (error) {
       console.error("Error creating user:", error)
-      setError(error.message || "Failed to create user")
+      setError(error.message || "Échec de la création de l'utilisateur")
     } finally {
       setIsCreating(false)
     }
@@ -177,7 +177,7 @@ export default function UsersPage() {
       }
 
       await api.updateUser(editUser.id, updateData)
-      setSuccess("User updated successfully!")
+      setSuccess("Utilisateur mis à jour avec succès !")
       setIsEditDialogOpen(false)
       setEditUser({ id: "", name: "", email: "", role: "", password: "" })
       setEditFormErrors({})
@@ -187,7 +187,7 @@ export default function UsersPage() {
       }, 1000)
     } catch (error) {
       console.error("Error updating user:", error)
-      setError(error.message || "Failed to update user")
+      setError(error.message || "Échec de la mise à jour de l'utilisateur")
     } finally {
       setIsUpdating(false)
     }
@@ -200,7 +200,7 @@ export default function UsersPage() {
 
     try {
       await api.deleteUser(userId)
-      setSuccess("User deleted successfully!")
+      setSuccess("Utilisateur supprimé avec succès !")
       setSelectedUser(null)
       
       setTimeout(() => {
@@ -208,7 +208,7 @@ export default function UsersPage() {
       }, 1000)
     } catch (error) {
       console.error("Error deleting user:", error)
-      setError(error.message || "Failed to delete user")
+      setError(error.message || "Échec de la suppression de l'utilisateur")
     } finally {
       setIsDeleting(false)
     }
@@ -268,7 +268,7 @@ export default function UsersPage() {
   }
 
   if (!user || isLoading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Chargement...</div>
   }
 
   return (
@@ -278,8 +278,8 @@ export default function UsersPage() {
       <div className="p-6">
         <div className="mb-6 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-            <p className="text-gray-600">Manage system users and their roles</p>
+            <h1 className="text-3xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
+            <p className="text-gray-600">Gérer les utilisateurs du système et leurs rôles</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open)
@@ -288,12 +288,12 @@ export default function UsersPage() {
             <DialogTrigger asChild>
               <Button className="bg-teal-500 hover:bg-teal-600">
                 <Plus className="h-4 w-4 mr-2" />
-                Add User
+                Ajouter un Utilisateur
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Create New User</DialogTitle>
+                <DialogTitle>Créer un Nouvel Utilisateur</DialogTitle>
               </DialogHeader>
               
               {error && (
@@ -312,12 +312,12 @@ export default function UsersPage() {
 
               <form onSubmit={handleCreateUser} className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Full Name *</Label>
+                  <Label htmlFor="name">Nom Complet *</Label>
                   <Input
                     id="name"
                     value={newUser.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
-                    placeholder="Enter full name"
+                    placeholder="Entrez le nom complet"
                     className={formErrors.name ? "border-red-500" : ""}
                   />
                   {formErrors.name && <p className="text-sm text-red-500 mt-1">{formErrors.name}</p>}
@@ -330,38 +330,38 @@ export default function UsersPage() {
                     type="email"
                     value={newUser.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    placeholder="Enter email address"
+                    placeholder="Entrez l'adresse email"
                     className={formErrors.email ? "border-red-500" : ""}
                   />
                   {formErrors.email && <p className="text-sm text-red-500 mt-1">{formErrors.email}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="role">Role *</Label>
+                  <Label htmlFor="role">Rôle *</Label>
                   <Select 
                     value={newUser.role} 
                     onValueChange={(value) => handleInputChange("role", value)}
                   >
                     <SelectTrigger className={formErrors.role ? "border-red-500" : ""}>
-                      <SelectValue placeholder="Select role" />
+                      <SelectValue placeholder="Sélectionner un rôle" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="patient">Patient</SelectItem>
-                      <SelectItem value="technician">Technician</SelectItem>
-                      <SelectItem value="admin">Administrator</SelectItem>
+                      <SelectItem value="technician">Technicien</SelectItem>
+                      <SelectItem value="admin">Administrateur</SelectItem>
                     </SelectContent>
                   </Select>
                   {formErrors.role && <p className="text-sm text-red-500 mt-1">{formErrors.role}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="password">Password *</Label>
+                  <Label htmlFor="password">Mot de Passe *</Label>
                   <Input
                     id="password"
                     type="password"
                     value={newUser.password}
                     onChange={(e) => handleInputChange("password", e.target.value)}
-                    placeholder="Enter password"
+                    placeholder="Entrez le mot de passe"
                     className={formErrors.password ? "border-red-500" : ""}
                   />
                   {formErrors.password && <p className="text-sm text-red-500 mt-1">{formErrors.password}</p>}
@@ -377,14 +377,14 @@ export default function UsersPage() {
                     }}
                     disabled={isCreating}
                   >
-                    Cancel
+                    Annuler
                   </Button>
                   <Button 
                     type="submit" 
                     className="bg-teal-500 hover:bg-teal-600"
                     disabled={isCreating}
                   >
-                    {isCreating ? "Creating..." : "Create User"}
+                    {isCreating ? "Création..." : "Créer l'Utilisateur"}
                   </Button>
                 </div>
               </form>
@@ -399,7 +399,7 @@ export default function UsersPage() {
         }}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Edit User</DialogTitle>
+              <DialogTitle>Modifier l'Utilisateur</DialogTitle>
             </DialogHeader>
             
             {error && (
@@ -418,12 +418,12 @@ export default function UsersPage() {
 
             <form onSubmit={handleEditUser} className="space-y-4">
               <div>
-                <Label htmlFor="edit-name">Full Name *</Label>
+                <Label htmlFor="edit-name">Nom Complet *</Label>
                 <Input
                   id="edit-name"
                   value={editUser.name}
                   onChange={(e) => handleInputChange("name", e.target.value, true)}
-                  placeholder="Enter full name"
+                  placeholder="Entrez le nom complet"
                   className={editFormErrors.name ? "border-red-500" : ""}
                 />
                 {editFormErrors.name && <p className="text-sm text-red-500 mt-1">{editFormErrors.name}</p>}
@@ -436,14 +436,14 @@ export default function UsersPage() {
                   type="email"
                   value={editUser.email}
                   onChange={(e) => handleInputChange("email", e.target.value, true)}
-                  placeholder="Enter email address"
+                  placeholder="Entrez l'adresse email"
                   className={editFormErrors.email ? "border-red-500" : ""}
                 />
                 {editFormErrors.email && <p className="text-sm text-red-500 mt-1">{editFormErrors.email}</p>}
               </div>
               
               <div>
-                <Label htmlFor="edit-role">Role *</Label>
+                <Label htmlFor="edit-role">Rôle *</Label>
                 <Select 
                   value={editUser.role} 
                   onValueChange={(value) => handleInputChange("role", value, true)}
@@ -453,21 +453,21 @@ export default function UsersPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="patient">Patient</SelectItem>
-                    <SelectItem value="technician">Technician</SelectItem>
-                    <SelectItem value="admin">Administrator</SelectItem>
+                    <SelectItem value="technician">Technicien</SelectItem>
+                    <SelectItem value="admin">Administrateur</SelectItem>
                   </SelectContent>
                 </Select>
                 {editFormErrors.role && <p className="text-sm text-red-500 mt-1">{editFormErrors.role}</p>}
               </div>
               
               <div>
-                <Label htmlFor="edit-password">New Password (leave blank to keep current)</Label>
+                <Label htmlFor="edit-password">Nouveau Mot de Passe (laisser vide pour conserver l'actuel)</Label>
                 <Input
                   id="edit-password"
                   type="password"
                   value={editUser.password}
                   onChange={(e) => handleInputChange("password", e.target.value, true)}
-                  placeholder="Enter new password"
+                  placeholder="Entrez le nouveau mot de passe"
                 />
               </div>
               
@@ -481,7 +481,7 @@ export default function UsersPage() {
                   }}
                   disabled={isUpdating}
                 >
-                  Cancel
+                  Annuler
                 </Button>
                 <Button 
                   type="submit" 
@@ -489,7 +489,7 @@ export default function UsersPage() {
                   disabled={isUpdating}
                 >
                   <Save className="h-4 w-4 mr-2" />
-                  {isUpdating ? "Updating..." : "Update User"}
+                  {isUpdating ? "Mise à jour..." : "Mettre à Jour l'Utilisateur"}
                 </Button>
               </div>
             </form>
@@ -499,12 +499,12 @@ export default function UsersPage() {
         <Card>
           <CardHeader>
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-              <CardTitle>System Users</CardTitle>
+              <CardTitle>Utilisateurs du Système</CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="Search users..."
+                    placeholder="Rechercher des utilisateurs..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 w-full sm:w-64"
@@ -512,12 +512,12 @@ export default function UsersPage() {
                 </div>
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
                   <SelectTrigger className="w-full sm:w-32">
-                    <SelectValue placeholder="Role" />
+                    <SelectValue placeholder="Rôle" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="all">Tous les Rôles</SelectItem>
                     <SelectItem value="patient">Patient</SelectItem>
-                    <SelectItem value="technician">Technician</SelectItem>
+                    <SelectItem value="technician">Technicien</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
@@ -529,10 +529,10 @@ export default function UsersPage() {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left p-3 font-medium">Name</th>
+                    <th className="text-left p-3 font-medium">Nom</th>
                     <th className="text-left p-3 font-medium">Email</th>
-                    <th className="text-left p-3 font-medium">Role</th>
-                    <th className="text-left p-3 font-medium">Created</th>
+                    <th className="text-left p-3 font-medium">Rôle</th>
+                    <th className="text-left p-3 font-medium">Créé le</th>
                     <th className="text-left p-3 font-medium">Actions</th>
                   </tr>
                 </thead>
@@ -542,7 +542,11 @@ export default function UsersPage() {
                       <td className="p-3 font-medium">{userData.name}</td>
                       <td className="p-3">{userData.email}</td>
                       <td className="p-3">
-                        <Badge variant={getRoleBadgeVariant(userData.role)}>{userData.role}</Badge>
+                        <Badge variant={getRoleBadgeVariant(userData.role)}>
+                          {userData.role === "admin" ? "Administrateur" : 
+                           userData.role === "technician" ? "Technicien" : 
+                           userData.role === "patient" ? "Patient" : userData.role}
+                        </Badge>
                       </td>
                       <td className="p-3 text-sm text-gray-500">
                         {new Date(userData.createdAt).toLocaleDateString()}
@@ -569,20 +573,20 @@ export default function UsersPage() {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Delete User</AlertDialogTitle>
+                                <AlertDialogTitle>Supprimer l'Utilisateur</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to delete <strong>{selectedUser?.name}</strong>? 
-                                  This action cannot be undone and will remove all associated data.
+                                  Êtes-vous sûr de vouloir supprimer <strong>{selectedUser?.name}</strong> ? 
+                                  Cette action ne peut pas être annulée et supprimera toutes les données associées.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={() => handleDeleteUser(selectedUser?.id)}
                                   className="bg-red-600 hover:bg-red-700"
                                   disabled={isDeleting}
                                 >
-                                  {isDeleting ? "Deleting..." : "Delete"}
+                                  {isDeleting ? "Suppression..." : "Supprimer"}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
@@ -595,7 +599,7 @@ export default function UsersPage() {
               </table>
               {filteredUsers.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
-                  {searchTerm || roleFilter !== "all" ? "No users match your filters" : "No users found"}
+                  {searchTerm || roleFilter !== "all" ? "Aucun utilisateur ne correspond à vos filtres" : "Aucun utilisateur trouvé"}
                 </div>
               )}
             </div>

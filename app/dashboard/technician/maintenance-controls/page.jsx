@@ -133,8 +133,8 @@ export default function MaintenanceControlsPage() {
     return matchesSearch && matchesStatus
   })
 
-  if (!user || isLoading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+  if (!user) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -147,6 +147,13 @@ export default function MaintenanceControlsPage() {
           <p className="text-gray-600">Gestion des contrôles de maintenance préventive</p>
         </div>
 
+        {/* Success/Error Messages */}
+        {success && (
+          <Alert className="mb-4">
+            <CheckCircle className="h-4 w-4" />
+            <AlertDescription>{success}</AlertDescription>
+          </Alert>
+        )}
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertTriangle className="h-4 w-4" />
@@ -154,13 +161,7 @@ export default function MaintenanceControlsPage() {
           </Alert>
         )}
 
-        {success && (
-          <Alert className="mb-4">
-            <CheckCircle className="h-4 w-4" />
-            <AlertDescription>{success}</AlertDescription>
-          </Alert>
-        )}
-
+        {/* Header with search and filters */}
         <Card className="mb-6">
           <CardHeader>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

@@ -81,13 +81,13 @@ export default function NewInterventionPage() {
   const validateForm = () => {
     const newErrors = {}
 
-    if (!formData.requestDate) newErrors.requestDate = "Request date is required"
-    if (!formData.requestedIntervention) newErrors.requestedIntervention = "Requested intervention is required"
-    if (!formData.department) newErrors.department = "Department is required"
-    if (!formData.requestedBy) newErrors.requestedBy = "Requested by is required"
-    if (!formData.equipmentDescription) newErrors.equipmentDescription = "Equipment description is required"
-    if (!formData.problemDescription) newErrors.problemDescription = "Problem description is required"
-    if (!formData.interventionType) newErrors.interventionType = "Intervention type is required"
+    if (!formData.requestDate) newErrors.requestDate = "La date de demande est requise"
+    if (!formData.requestedIntervention) newErrors.requestedIntervention = "L'intervention demandée est requise"
+    if (!formData.department) newErrors.department = "Le département est requis"
+    if (!formData.requestedBy) newErrors.requestedBy = "Le demandeur est requis"
+    if (!formData.equipmentDescription) newErrors.equipmentDescription = "La description de l'équipement est requise"
+    if (!formData.problemDescription) newErrors.problemDescription = "La description du problème est requise"
+    if (!formData.interventionType) newErrors.interventionType = "Le type d'intervention est requis"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -113,7 +113,7 @@ export default function NewInterventionPage() {
       router.push("/dashboard/technician/interventions")
     } catch (error) {
       console.error("Error creating intervention:", error)
-      setErrors({ submit: "Failed to create intervention. Please try again." })
+      setErrors({ submit: "Échec de la création de l'intervention. Veuillez réessayer." })
     } finally {
       setIsLoading(false)
     }
@@ -132,7 +132,7 @@ export default function NewInterventionPage() {
   }
 
   if (!user) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Chargement...</div>
   }
 
   return (
@@ -143,11 +143,11 @@ export default function NewInterventionPage() {
         <div className="mb-6 flex items-center gap-4">
           <Button variant="outline" onClick={() => router.back()}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
+            Retour
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">New Intervention Report</h1>
-            <p className="text-gray-600">Fill out the technical intervention form</p>
+            <h1 className="text-3xl font-bold text-gray-900">Nouveau Rapport d'Intervention</h1>
+            <p className="text-gray-600">Remplissez le formulaire d'intervention technique</p>
           </div>
         </div>
 
@@ -163,11 +163,11 @@ export default function NewInterventionPage() {
             {/* Basic Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
+                <CardTitle>Informations de Base</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="requestDate">Request Date *</Label>
+                  <Label htmlFor="requestDate">Date de Demande *</Label>
                   <Input
                     id="requestDate"
                     type="date"
@@ -179,31 +179,31 @@ export default function NewInterventionPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="requestedIntervention">Requested Intervention *</Label>
+                  <Label htmlFor="requestedIntervention">Intervention Demandée *</Label>
                   <Input
                     id="requestedIntervention"
                     value={formData.requestedIntervention}
                     onChange={(e) => handleInputChange("requestedIntervention", e.target.value)}
-                    placeholder="e.g., Repair dialysis machine, Preventive maintenance"
+                    placeholder="ex: Réparation machine de dialyse, Maintenance préventive"
                     className={errors.requestedIntervention ? "border-red-500" : ""}
                   />
                   {errors.requestedIntervention && <p className="text-sm text-red-500 mt-1">{errors.requestedIntervention}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="requestedBy">Requested By *</Label>
+                  <Label htmlFor="requestedBy">Demandé Par *</Label>
                   <Input
                     id="requestedBy"
                     value={formData.requestedBy}
                     onChange={(e) => handleInputChange("requestedBy", e.target.value)}
-                    placeholder="Name of person requesting the intervention"
+                    placeholder="Nom de la personne demandant l'intervention"
                     className={errors.requestedBy ? "border-red-500" : ""}
                   />
                   {errors.requestedBy && <p className="text-sm text-red-500 mt-1">{errors.requestedBy}</p>}
                 </div>
 
                 <div>
-                  <Label>Intervention Type *</Label>
+                  <Label>Type d'Intervention *</Label>
                   <RadioGroup 
                     value={formData.interventionType} 
                     onValueChange={(value) => handleInputChange("interventionType", value)}
@@ -211,7 +211,7 @@ export default function NewInterventionPage() {
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Preventive" id="preventive" />
-                      <Label htmlFor="preventive">Preventive</Label>
+                      <Label htmlFor="preventive">Préventive</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Curative" id="curative" />
@@ -219,7 +219,7 @@ export default function NewInterventionPage() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Emergency" id="emergency" />
-                      <Label htmlFor="emergency">Emergency</Label>
+                      <Label htmlFor="emergency">Urgence</Label>
                     </div>
                   </RadioGroup>
                   {errors.interventionType && <p className="text-sm text-red-500 mt-1">{errors.interventionType}</p>}
@@ -230,14 +230,14 @@ export default function NewInterventionPage() {
             {/* Equipment Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Equipment Information</CardTitle>
+                <CardTitle>Informations sur l'Équipement</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="machineSelect">Select Machine (Optional)</Label>
+                  <Label htmlFor="machineSelect">Sélectionner une Machine (Optionnel)</Label>
                   <Select onValueChange={handleMachineSelect} disabled={isLoadingMachines}>
                     <SelectTrigger>
-                      <SelectValue placeholder={isLoadingMachines ? "Loading machines..." : "Choose a machine"} />
+                      <SelectValue placeholder={isLoadingMachines ? "Chargement des machines..." : "Choisir une machine"} />
                     </SelectTrigger>
                     <SelectContent>
                       {machines.map((machine) => (
@@ -250,40 +250,40 @@ export default function NewInterventionPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="equipmentDescription">Equipment Description *</Label>
+                  <Label htmlFor="equipmentDescription">Description de l'Équipement *</Label>
                   <Input
                     id="equipmentDescription"
                     value={formData.equipmentDescription}
                     onChange={(e) => handleInputChange("equipmentDescription", e.target.value)}
-                    placeholder="e.g., Fresenius 4008S Dialysis Machine"
+                    placeholder="ex: Machine de Dialyse Fresenius 4008S"
                     className={errors.equipmentDescription ? "border-red-500" : ""}
                   />
                   {errors.equipmentDescription && <p className="text-sm text-red-500 mt-1">{errors.equipmentDescription}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="inventoryNumber">Inventory Number</Label>
+                  <Label htmlFor="inventoryNumber">Numéro d'Inventaire</Label>
                   <Input
                     id="inventoryNumber"
                     value={formData.inventoryNumber}
                     onChange={(e) => handleInputChange("inventoryNumber", e.target.value)}
-                    placeholder="e.g., INV-2024-001"
+                    placeholder="ex: INV-2024-001"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="department">Department *</Label>
+                  <Label htmlFor="department">Département *</Label>
                   <Select onValueChange={(value) => handleInputChange("department", value)}>
                     <SelectTrigger className={errors.department ? "border-red-500" : ""}>
-                      <SelectValue placeholder="Select department" />
+                      <SelectValue placeholder="Sélectionner un département" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Dialysis Unit A">Dialysis Unit A</SelectItem>
-                      <SelectItem value="Dialysis Unit B">Dialysis Unit B</SelectItem>
-                      <SelectItem value="Dialysis Unit C">Dialysis Unit C</SelectItem>
-                      <SelectItem value="ICU">ICU</SelectItem>
-                      <SelectItem value="Emergency">Emergency</SelectItem>
-                      <SelectItem value="Operating Room">Operating Room</SelectItem>
+                      <SelectItem value="Dialysis Unit A">Unité de Dialyse A</SelectItem>
+                      <SelectItem value="Dialysis Unit B">Unité de Dialyse B</SelectItem>
+                      <SelectItem value="Dialysis Unit C">Unité de Dialyse C</SelectItem>
+                      <SelectItem value="ICU">USI</SelectItem>
+                      <SelectItem value="Emergency">Urgences</SelectItem>
+                      <SelectItem value="Operating Room">Salle d'Opération</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.department && <p className="text-sm text-red-500 mt-1">{errors.department}</p>}
@@ -294,17 +294,17 @@ export default function NewInterventionPage() {
             {/* Problem Description */}
             <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle>Problem Description</CardTitle>
+                <CardTitle>Description du Problème</CardTitle>
               </CardHeader>
               <CardContent>
                 <div>
-                  <Label htmlFor="problemDescription">Problem Description *</Label>
+                  <Label htmlFor="problemDescription">Description du Problème *</Label>
                   <Textarea
                     id="problemDescription"
                     value={formData.problemDescription}
                     onChange={(e) => handleInputChange("problemDescription", e.target.value)}
                     rows={4}
-                    placeholder="Describe the problem in detail..."
+                    placeholder="Décrivez le problème en détail..."
                     className={errors.problemDescription ? "border-red-500" : ""}
                   />
                   {errors.problemDescription && <p className="text-sm text-red-500 mt-1">{errors.problemDescription}</p>}
@@ -315,11 +315,11 @@ export default function NewInterventionPage() {
             {/* Timeline */}
             <Card>
               <CardHeader>
-                <CardTitle>Timeline</CardTitle>
+                <CardTitle>Chronologie</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="arrivalAtWorkshop">Arrival at Workshop</Label>
+                  <Label htmlFor="arrivalAtWorkshop">Arrivée à l'Atelier</Label>
                   <Input
                     id="arrivalAtWorkshop"
                     type="datetime-local"
@@ -329,7 +329,7 @@ export default function NewInterventionPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="datePerformed">Date Performed</Label>
+                  <Label htmlFor="datePerformed">Date d'Exécution</Label>
                   <Input
                     id="datePerformed"
                     type="datetime-local"
@@ -339,7 +339,7 @@ export default function NewInterventionPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="returnToService">Return to Service</Label>
+                  <Label htmlFor="returnToService">Retour en Service</Label>
                   <Input
                     id="returnToService"
                     type="datetime-local"
@@ -349,7 +349,7 @@ export default function NewInterventionPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="timeSpent">Time Spent (hours)</Label>
+                  <Label htmlFor="timeSpent">Temps Passé (heures)</Label>
                   <Input
                     id="timeSpent"
                     type="number"
@@ -357,7 +357,7 @@ export default function NewInterventionPage() {
                     min="0"
                     value={formData.timeSpent}
                     onChange={(e) => handleInputChange("timeSpent", e.target.value)}
-                    placeholder="e.g., 2.5"
+                    placeholder="ex: 2.5"
                   />
                 </div>
 
@@ -384,43 +384,43 @@ export default function NewInterventionPage() {
             {/* Work Details */}
             <Card>
               <CardHeader>
-                <CardTitle>Work Details</CardTitle>
+                <CardTitle>Détails du Travail</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="tasksCompleted">Tasks Completed</Label>
+                  <Label htmlFor="tasksCompleted">Tâches Accomplies</Label>
                   <Textarea
                     id="tasksCompleted"
                     value={formData.tasksCompleted}
                     onChange={(e) => handleInputChange("tasksCompleted", e.target.value)}
                     rows={3}
-                    placeholder="List all tasks performed..."
+                    placeholder="Listez toutes les tâches effectuées..."
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="partsReplaced">Parts Replaced</Label>
+                  <Label htmlFor="partsReplaced">Pièces Remplacées</Label>
                   <Input
                     id="partsReplaced"
                     value={formData.partsReplaced}
                     onChange={(e) => handleInputChange("partsReplaced", e.target.value)}
-                    placeholder="e.g., 2 filters, 1 pump"
+                    placeholder="ex: 2 filtres, 1 pompe"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="partDescription">Part Description</Label>
+                  <Label htmlFor="partDescription">Description des Pièces</Label>
                   <Textarea
                     id="partDescription"
                     value={formData.partDescription}
                     onChange={(e) => handleInputChange("partDescription", e.target.value)}
                     rows={2}
-                    placeholder="Description and provenance of parts..."
+                    placeholder="Description et provenance des pièces..."
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="price">Cost (MAD)</Label>
+                  <Label htmlFor="price">Coût (MAD)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -428,7 +428,7 @@ export default function NewInterventionPage() {
                     min="0"
                     value={formData.price}
                     onChange={(e) => handleInputChange("price", e.target.value)}
-                    placeholder="e.g., 1500.00"
+                    placeholder="ex: 1500.00"
                   />
                 </div>
               </CardContent>
@@ -437,11 +437,11 @@ export default function NewInterventionPage() {
 
           <div className="mt-6 flex justify-end gap-4">
             <Button type="button" variant="outline" onClick={() => router.back()}>
-              Cancel
+              Annuler
             </Button>
             <Button type="submit" disabled={isLoading} className="bg-teal-500 hover:bg-teal-600">
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? "Saving..." : "Save Intervention"}
+              {isLoading ? "Enregistrement..." : "Enregistrer l'Intervention"}
             </Button>
           </div>
         </form>

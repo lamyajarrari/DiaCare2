@@ -178,4 +178,4 @@ console.log('\n📝 Notes importantes:');
 console.log('1. Vérifiez que tous les imports de traduction ont été ajoutés');
 console.log('2. Vérifiez que le hook useTranslation a été ajouté dans chaque composant');
 console.log('3. Testez l\'application pour vous assurer que tout fonctionne');
-console.log('4. Ajoutez manuellement les traductions manquantes dans lib/translations.js'); 
+console.log('4. Ajoutez manuellement les traductions manquantes dans lib/translations.js');

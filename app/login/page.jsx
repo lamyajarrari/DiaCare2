@@ -44,11 +44,11 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-4">
           {/* Conteneur du logo - taille très grande */}
-          <div className="mx-auto w-48 h-48 flex items-center justify-center"> {/* 192px × 192px */}
+          <div className="mx-auto w-48 h-48 flex items-center justify-center">
             <Image 
               src="/logo.png"
               alt="DiaCare Logo"
-              width={192}  // Taille augmentée
+              width={192}
               height={192}
               quality={100}
               priority

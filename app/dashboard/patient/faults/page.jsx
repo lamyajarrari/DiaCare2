@@ -92,7 +92,7 @@ export default function PatientFaultsPage() {
   )
 
   if (!user) {
-    return <div>Loading...</div>
+    return <div>Chargement...</div>
   }
 
   return (

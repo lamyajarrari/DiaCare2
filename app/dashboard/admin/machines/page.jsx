@@ -85,7 +85,7 @@ export default function MachinesPage() {
       setFilteredMachines(machinesData)
     } catch (error) {
       console.error("Error loading machines:", error)
-      setError("Failed to load machines")
+      setError("Échec du chargement des machines")
     } finally {
       setIsLoading(false)
     }
@@ -95,15 +95,15 @@ export default function MachinesPage() {
     const errors = {}
     
     if (!machineData.name.trim()) {
-      errors.name = "Machine name is required"
+      errors.name = "Le nom de la machine est requis"
     }
     
     if (!machineData.inventoryNumber.trim()) {
-      errors.inventoryNumber = "Inventory number is required"
+      errors.inventoryNumber = "Le numéro d'inventaire est requis"
     }
     
     if (!machineData.department) {
-      errors.department = "Department is required"
+      errors.department = "Le département est requis"
     }
     
     setFormErrors(errors)
@@ -128,7 +128,7 @@ export default function MachinesPage() {
         nextMaintenance: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
       })
       
-      setSuccess("Machine created successfully!")
+      setSuccess("Machine créée avec succès !")
       setIsDialogOpen(false)
       setNewMachine({ name: "", inventoryNumber: "", department: "", status: "Active" })
       setFormErrors({})
@@ -139,7 +139,7 @@ export default function MachinesPage() {
       }, 1000)
     } catch (error) {
       console.error("Error creating machine:", error)
-      setError(error.message || "Failed to create machine. Please try again.")
+      setError(error.message || "Échec de la création de la machine. Veuillez réessayer.")
     } finally {
       setIsCreating(false)
     }
@@ -164,7 +164,7 @@ export default function MachinesPage() {
         status: editingMachine.status,
       })
       
-      setSuccess("Machine updated successfully!")
+      setSuccess("Machine mise à jour avec succès !")
       setIsEditDialogOpen(false)
       setEditingMachine(null)
       setFormErrors({})
@@ -175,7 +175,7 @@ export default function MachinesPage() {
       }, 1000)
     } catch (error) {
       console.error("Error updating machine:", error)
-      setError(error.message || "Failed to update machine. Please try again.")
+      setError(error.message || "Échec de la mise à jour de la machine. Veuillez réessayer.")
     } finally {
       setIsUpdating(false)
     }
@@ -199,14 +199,14 @@ export default function MachinesPage() {
       
       if (forceDelete && result.deletedData) {
         const deletedItems = [];
-        if (result.deletedData.faults > 0) deletedItems.push(`${result.deletedData.faults} fault(s)`);
-        if (result.deletedData.alerts > 0) deletedItems.push(`${result.deletedData.alerts} alert(s)`);
-        if (result.deletedData.maintenanceSchedule > 0) deletedItems.push(`${result.deletedData.maintenanceSchedule} maintenance schedule(s)`);
-        if (result.deletedData.maintenanceControls > 0) deletedItems.push(`${result.deletedData.maintenanceControls} maintenance control(s)`);
+        if (result.deletedData.faults > 0) deletedItems.push(`${result.deletedData.faults} panne(s)`);
+        if (result.deletedData.alerts > 0) deletedItems.push(`${result.deletedData.alerts} alerte(s)`);
+        if (result.deletedData.maintenanceSchedule > 0) deletedItems.push(`${result.deletedData.maintenanceSchedule} planification(s) de maintenance`);
+        if (result.deletedData.maintenanceControls > 0) deletedItems.push(`${result.deletedData.maintenanceControls} contrôle(s) de maintenance`);
         
-        setSuccess(`Machine "${machineToDelete.name}" and all related data (${deletedItems.join(', ')}) deleted successfully!`)
+        setSuccess(`Machine "${machineToDelete.name}" et toutes les données associées (${deletedItems.join(', ')}) supprimées avec succès !`)
       } else {
-        setSuccess("Machine deleted successfully!")
+        setSuccess("Machine supprimée avec succès !")
       }
       
       // Reload machines after a short delay to show success message
@@ -225,23 +225,23 @@ export default function MachinesPage() {
             const details = JSON.parse(detailsMatch[1]);
             const relatedData = [];
             
-            if (details.faults > 0) relatedData.push(`${details.faults} fault(s)`);
-            if (details.alerts > 0) relatedData.push(`${details.alerts} alert(s)`);
-            if (details.maintenanceSchedule > 0) relatedData.push(`${details.maintenanceSchedule} maintenance schedule(s)`);
-            if (details.maintenanceControls > 0) relatedData.push(`${details.maintenanceControls} maintenance control(s)`);
+            if (details.faults > 0) relatedData.push(`${details.faults} panne(s)`);
+            if (details.alerts > 0) relatedData.push(`${details.alerts} alerte(s)`);
+            if (details.maintenanceSchedule > 0) relatedData.push(`${details.maintenanceSchedule} planification(s) de maintenance`);
+            if (details.maintenanceControls > 0) relatedData.push(`${details.maintenanceControls} contrôle(s) de maintenance`);
             
-            setError(`Cannot delete machine "${machineToDelete.name}" because it has related data: ${relatedData.join(', ')}. Please remove or reassign these items first.`)
+            setError(`Impossible de supprimer la machine "${machineToDelete.name}" car elle a des données associées : ${relatedData.join(', ')}. Veuillez supprimer ou réassigner ces éléments en premier.`)
             setDeletionDetails(details)
           } catch (parseError) {
-            setError(`Cannot delete machine "${machineToDelete.name}" because it has related data. Please remove all associated faults, alerts, maintenance schedules, and controls first.`)
+            setError(`Impossible de supprimer la machine "${machineToDelete.name}" car elle a des données associées. Veuillez supprimer toutes les pannes, alertes, planifications de maintenance et contrôles associés en premier.`)
             setDeletionDetails(null)
           }
         } else {
-          setError(`Cannot delete machine "${machineToDelete.name}" because it has related data. Please remove all associated faults, alerts, maintenance schedules, and controls first.`)
+          setError(`Impossible de supprimer la machine "${machineToDelete.name}" car elle a des données associées. Veuillez supprimer toutes les pannes, alertes, planifications de maintenance et contrôles associés en premier.`)
           setDeletionDetails(null)
         }
       } else {
-        setError(error.message || "Failed to delete machine. Please try again.")
+        setError(error.message || "Échec de la suppression de la machine. Veuillez réessayer.")
         setDeletionDetails(null)
       }
     } finally {
@@ -295,7 +295,7 @@ export default function MachinesPage() {
   }
 
   if (!user || isLoading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Chargement...</div>
   }
 
   return (
@@ -305,8 +305,8 @@ export default function MachinesPage() {
       <div className="p-6">
         <div className="mb-6 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Machine Management</h1>
-            <p className="text-gray-600">Manage dialysis machines and equipment</p>
+            <h1 className="text-3xl font-bold text-gray-900">Gestion des Machines</h1>
+            <p className="text-gray-600">Gérer les machines de dialyse et l'équipement</p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => {
             setIsDialogOpen(open)
@@ -315,12 +315,12 @@ export default function MachinesPage() {
             <DialogTrigger asChild>
               <Button className="bg-teal-500 hover:bg-teal-600">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Machine
+                Ajouter une Machine
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>Add New Machine</DialogTitle>
+                <DialogTitle>Ajouter une Nouvelle Machine</DialogTitle>
               </DialogHeader>
               
               {error && (
@@ -339,52 +339,52 @@ export default function MachinesPage() {
 
               <form onSubmit={handleCreateMachine} className="space-y-4">
                 <div>
-                  <Label htmlFor="name">Machine Name *</Label>
+                  <Label htmlFor="name">Nom de la Machine *</Label>
                   <Input
                     id="name"
                     value={newMachine.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
-                    placeholder="e.g., Fresenius 4008S"
+                    placeholder="ex: Fresenius 4008S"
                     className={formErrors.name ? "border-red-500" : ""}
                   />
                   {formErrors.name && <p className="text-sm text-red-500 mt-1">{formErrors.name}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="inventoryNumber">Inventory Number *</Label>
+                  <Label htmlFor="inventoryNumber">Numéro d'Inventaire *</Label>
                   <Input
                     id="inventoryNumber"
                     value={newMachine.inventoryNumber}
                     onChange={(e) => handleInputChange("inventoryNumber", e.target.value)}
-                    placeholder="e.g., INV-003"
+                    placeholder="ex: INV-003"
                     className={formErrors.inventoryNumber ? "border-red-500" : ""}
                   />
                   {formErrors.inventoryNumber && <p className="text-sm text-red-500 mt-1">{formErrors.inventoryNumber}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="department">Department *</Label>
+                  <Label htmlFor="department">Département *</Label>
                   <Select 
                     value={newMachine.department} 
                     onValueChange={(value) => handleInputChange("department", value)}
                   >
                     <SelectTrigger className={formErrors.department ? "border-red-500" : ""}>
-                      <SelectValue placeholder="Select department" />
+                      <SelectValue placeholder="Sélectionner un département" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Dialysis Unit A">Dialysis Unit A</SelectItem>
-                      <SelectItem value="Dialysis Unit B">Dialysis Unit B</SelectItem>
-                      <SelectItem value="Dialysis Unit C">Dialysis Unit C</SelectItem>
-                      <SelectItem value="ICU">ICU</SelectItem>
-                      <SelectItem value="Emergency">Emergency</SelectItem>
-                      <SelectItem value="Operating Room">Operating Room</SelectItem>
+                      <SelectItem value="Dialysis Unit A">Unité de Dialyse A</SelectItem>
+                      <SelectItem value="Dialysis Unit B">Unité de Dialyse B</SelectItem>
+                      <SelectItem value="Dialysis Unit C">Unité de Dialyse C</SelectItem>
+                      <SelectItem value="ICU">USI</SelectItem>
+                      <SelectItem value="Emergency">Urgences</SelectItem>
+                      <SelectItem value="Operating Room">Salle d'Opération</SelectItem>
                     </SelectContent>
                   </Select>
                   {formErrors.department && <p className="text-sm text-red-500 mt-1">{formErrors.department}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="status">Statut</Label>
                   <Select 
                     value={newMachine.status} 
                     onValueChange={(value) => handleInputChange("status", value)}
@@ -393,9 +393,9 @@ export default function MachinesPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Active">Actif</SelectItem>
                       <SelectItem value="Maintenance">Maintenance</SelectItem>
-                      <SelectItem value="Inactive">Inactive</SelectItem>
+                      <SelectItem value="Inactive">Inactif</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -410,14 +410,14 @@ export default function MachinesPage() {
                     }}
                     disabled={isCreating}
                   >
-                    Cancel
+                    Annuler
                   </Button>
                   <Button 
                     type="submit" 
                     className="bg-teal-500 hover:bg-teal-600"
                     disabled={isCreating}
                   >
-                    {isCreating ? "Creating..." : "Add Machine"}
+                    {isCreating ? "Création..." : "Ajouter la Machine"}
                   </Button>
                 </div>
               </form>
@@ -432,7 +432,7 @@ export default function MachinesPage() {
         }}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Edit Machine</DialogTitle>
+              <DialogTitle>Modifier la Machine</DialogTitle>
             </DialogHeader>
             
             {error && (
@@ -452,52 +452,52 @@ export default function MachinesPage() {
             {editingMachine && (
               <form onSubmit={handleEditMachine} className="space-y-4">
                 <div>
-                  <Label htmlFor="edit-name">Machine Name *</Label>
+                  <Label htmlFor="edit-name">Nom de la Machine *</Label>
                   <Input
                     id="edit-name"
                     value={editingMachine.name}
                     onChange={(e) => handleEditInputChange("name", e.target.value)}
-                    placeholder="e.g., Fresenius 4008S"
+                    placeholder="ex: Fresenius 4008S"
                     className={formErrors.name ? "border-red-500" : ""}
                   />
                   {formErrors.name && <p className="text-sm text-red-500 mt-1">{formErrors.name}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="edit-inventoryNumber">Inventory Number *</Label>
+                  <Label htmlFor="edit-inventoryNumber">Numéro d'Inventaire *</Label>
                   <Input
                     id="edit-inventoryNumber"
                     value={editingMachine.inventoryNumber}
                     onChange={(e) => handleEditInputChange("inventoryNumber", e.target.value)}
-                    placeholder="e.g., INV-003"
+                    placeholder="ex: INV-003"
                     className={formErrors.inventoryNumber ? "border-red-500" : ""}
                   />
                   {formErrors.inventoryNumber && <p className="text-sm text-red-500 mt-1">{formErrors.inventoryNumber}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="edit-department">Department *</Label>
+                  <Label htmlFor="edit-department">Département *</Label>
                   <Select 
                     value={editingMachine.department} 
                     onValueChange={(value) => handleEditInputChange("department", value)}
                   >
                     <SelectTrigger className={formErrors.department ? "border-red-500" : ""}>
-                      <SelectValue placeholder="Select department" />
+                      <SelectValue placeholder="Sélectionner un département" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Dialysis Unit A">Dialysis Unit A</SelectItem>
-                      <SelectItem value="Dialysis Unit B">Dialysis Unit B</SelectItem>
-                      <SelectItem value="Dialysis Unit C">Dialysis Unit C</SelectItem>
-                      <SelectItem value="ICU">ICU</SelectItem>
-                      <SelectItem value="Emergency">Emergency</SelectItem>
-                      <SelectItem value="Operating Room">Operating Room</SelectItem>
+                      <SelectItem value="Dialysis Unit A">Unité de Dialyse A</SelectItem>
+                      <SelectItem value="Dialysis Unit B">Unité de Dialyse B</SelectItem>
+                      <SelectItem value="Dialysis Unit C">Unité de Dialyse C</SelectItem>
+                      <SelectItem value="ICU">USI</SelectItem>
+                      <SelectItem value="Emergency">Urgences</SelectItem>
+                      <SelectItem value="Operating Room">Salle d'Opération</SelectItem>
                     </SelectContent>
                   </Select>
                   {formErrors.department && <p className="text-sm text-red-500 mt-1">{formErrors.department}</p>}
                 </div>
                 
                 <div>
-                  <Label htmlFor="edit-status">Status</Label>
+                  <Label htmlFor="edit-status">Statut</Label>
                   <Select 
                     value={editingMachine.status} 
                     onValueChange={(value) => handleEditInputChange("status", value)}
@@ -506,9 +506,9 @@ export default function MachinesPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Active">Active</SelectItem>
+                      <SelectItem value="Active">Actif</SelectItem>
                       <SelectItem value="Maintenance">Maintenance</SelectItem>
-                      <SelectItem value="Inactive">Inactive</SelectItem>
+                      <SelectItem value="Inactive">Inactif</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -523,14 +523,14 @@ export default function MachinesPage() {
                     }}
                     disabled={isUpdating}
                   >
-                    Cancel
+                    Annuler
                   </Button>
                   <Button 
                     type="submit" 
                     className="bg-teal-500 hover:bg-teal-600"
                     disabled={isUpdating}
                   >
-                    {isUpdating ? "Updating..." : "Update Machine"}
+                    {isUpdating ? "Mise à jour..." : "Mettre à Jour la Machine"}
                   </Button>
                 </div>
               </form>
@@ -541,12 +541,12 @@ export default function MachinesPage() {
         <Card>
           <CardHeader>
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-              <CardTitle>Dialysis Machines</CardTitle>
+              <CardTitle>Machines de Dialyse</CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="Search machines..."
+                    placeholder="Rechercher des machines..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 w-full sm:w-64"
@@ -554,13 +554,13 @@ export default function MachinesPage() {
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-full sm:w-32">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder="Statut" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="all">Tous les Statuts</SelectItem>
+                    <SelectItem value="Active">Actif</SelectItem>
                     <SelectItem value="Maintenance">Maintenance</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
+                    <SelectItem value="Inactive">Inactif</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -572,11 +572,11 @@ export default function MachinesPage() {
                 <thead>
                   <tr className="border-b">
                     <th className="text-left p-3 font-medium">Machine</th>
-                    <th className="text-left p-3 font-medium">Inventory #</th>
-                    <th className="text-left p-3 font-medium">Department</th>
-                    <th className="text-left p-3 font-medium">Status</th>
-                    <th className="text-left p-3 font-medium">Last Maintenance</th>
-                    <th className="text-left p-3 font-medium">Next Maintenance</th>
+                    <th className="text-left p-3 font-medium">N° Inventaire</th>
+                    <th className="text-left p-3 font-medium">Département</th>
+                    <th className="text-left p-3 font-medium">Statut</th>
+                    <th className="text-left p-3 font-medium">Dernière Maintenance</th>
+                    <th className="text-left p-3 font-medium">Prochaine Maintenance</th>
                     <th className="text-left p-3 font-medium">Actions</th>
                   </tr>
                 </thead>
@@ -596,19 +596,19 @@ export default function MachinesPage() {
                                 : "destructive"
                           }
                         >
-                          {machine.status}
+                          {machine.status === "Active" ? "Actif" : machine.status === "Maintenance" ? "Maintenance" : "Inactif"}
                         </Badge>
                       </td>
                       <td className="p-3">
                         {machine.lastMaintenance 
                           ? new Date(machine.lastMaintenance).toLocaleDateString()
-                          : "Not set"
+                          : "Non défini"
                         }
                       </td>
                       <td className="p-3">
                         {machine.nextMaintenance 
                           ? new Date(machine.nextMaintenance).toLocaleDateString()
-                          : "Not set"
+                          : "Non défini"
                         }
                       </td>
                       <td className="p-3">
@@ -638,7 +638,7 @@ export default function MachinesPage() {
               </table>
               {filteredMachines.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
-                  {searchTerm || statusFilter !== "all" ? "No machines match your filters" : "No machines found"}
+                  {searchTerm || statusFilter !== "all" ? "Aucune machine ne correspond à vos filtres" : "Aucune machine trouvée"}
                 </div>
               )}
             </div>
@@ -651,28 +651,28 @@ export default function MachinesPage() {
             <CardContent className="p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-red-800 mb-2">Cannot Delete Machine</h3>
+                  <h3 className="text-lg font-semibold text-red-800 mb-2">Impossible de Supprimer la Machine</h3>
                   <p className="text-red-700 mb-3">{error}</p>
                   
                   {showDeletionDetails ? (
                     <div className="bg-white p-3 rounded border border-red-200">
-                      <h4 className="font-medium text-red-800 mb-2">Related Data Details:</h4>
+                      <h4 className="font-medium text-red-800 mb-2">Détails des Données Associées :</h4>
                       <ul className="space-y-1 text-sm text-red-700">
                         {deletionDetails.faults > 0 && (
-                          <li>• <strong>{deletionDetails.faults}</strong> fault(s) - Check the Faults page</li>
+                          <li>• <strong>{deletionDetails.faults}</strong> panne(s) - Consultez la page Pannes</li>
                         )}
                         {deletionDetails.alerts > 0 && (
-                          <li>• <strong>{deletionDetails.alerts}</strong> alert(s) - Check the Alerts page</li>
+                          <li>• <strong>{deletionDetails.alerts}</strong> alerte(s) - Consultez la page Alertes</li>
                         )}
                         {deletionDetails.maintenanceSchedule > 0 && (
-                          <li>• <strong>{deletionDetails.maintenanceSchedule}</strong> maintenance schedule(s) - Check the Maintenance page</li>
+                          <li>• <strong>{deletionDetails.maintenanceSchedule}</strong> planification(s) de maintenance - Consultez la page Maintenance</li>
                         )}
                         {deletionDetails.maintenanceControls > 0 && (
-                          <li>• <strong>{deletionDetails.maintenanceControls}</strong> maintenance control(s) - Check the Maintenance Controls page</li>
+                          <li>• <strong>{deletionDetails.maintenanceControls}</strong> contrôle(s) de maintenance - Consultez la page Contrôles de Maintenance</li>
                         )}
                       </ul>
                       <p className="text-sm text-red-600 mt-2">
-                        <strong>Action required:</strong> Remove or reassign all related data before deleting this machine.
+                        <strong>Action requise :</strong> Supprimez ou réassignez toutes les données associées avant de supprimer cette machine.
                       </p>
                     </div>
                   ) : (
@@ -682,7 +682,7 @@ export default function MachinesPage() {
                       onClick={() => setShowDeletionDetails(true)}
                       className="text-red-700 border-red-300 hover:bg-red-100"
                     >
-                      View Details
+                      Voir les Détails
                     </Button>
                   )}
                 </div>
@@ -705,20 +705,20 @@ export default function MachinesPage() {
 
         {/* Dialogue de confirmation de suppression forcée */}
         <Dialog open={showForceDeleteDialog} onOpenChange={setShowForceDeleteDialog}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Delete Machine</DialogTitle>
+              <DialogTitle>Supprimer la Machine</DialogTitle>
             </DialogHeader>
             
             <div className="space-y-4">
               <p className="text-gray-700">
-                Are you sure you want to delete the machine <strong>"{machineToDelete?.name}"</strong>?
+                Êtes-vous sûr de vouloir supprimer la machine <strong>"{machineToDelete?.name}"</strong> ?
               </p>
               
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h4 className="font-medium text-yellow-800 mb-2">⚠️ Warning</h4>
+                <h4 className="font-medium text-yellow-800 mb-2">⚠️ Attention</h4>
                 <p className="text-sm text-yellow-700">
-                  This action cannot be undone. The machine and all its related data will be permanently deleted.
+                  Cette action ne peut pas être annulée. La machine et toutes ses données associées seront définitivement supprimées.
                 </p>
               </div>
               
@@ -728,7 +728,7 @@ export default function MachinesPage() {
                   onClick={() => setShowForceDeleteDialog(false)}
                   disabled={isDeleting}
                 >
-                  Cancel
+                  Annuler
                 </Button>
                 <Button 
                   variant="outline"
@@ -736,14 +736,14 @@ export default function MachinesPage() {
                   disabled={isDeleting}
                   className="text-red-600 border-red-300 hover:bg-red-50"
                 >
-                  {isDeleting ? "Deleting..." : "Delete Machine"}
+                  {isDeleting ? "Suppression..." : "Supprimer la Machine"}
                 </Button>
                 <Button 
                   onClick={() => confirmDeleteMachine(true)}
                   disabled={isDeleting}
                   className="bg-red-600 hover:bg-red-700"
                 >
-                  {isDeleting ? "Deleting..." : "Force Delete (All Data)"}
+                  {isDeleting ? "Suppression..." : "Suppression Forcée (Toutes les Données)"}
                 </Button>
               </div>
             </div>

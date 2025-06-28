@@ -13,6 +13,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "node prisma/seed.js",
+    "vercel-build":"prisma generate && prisma migrate deploy && next build",
     "test:maintenance": "node scripts/test-maintenance-notifications.js",
     "test:reminders": "node scripts/check-intervention-reminders.js",
     "test:alert": "node scripts/test-alert.js",

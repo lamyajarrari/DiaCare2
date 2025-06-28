@@ -78,7 +78,7 @@ export default function ReportsPage() {
   }
 
   if (!user || isLoading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Chargement...</div>
   }
 
   const faultTypes = reportData.faults.reduce((acc, fault) => {
@@ -103,8 +103,8 @@ export default function ReportsPage() {
       <div className="p-6">
         <div className="mb-6 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Reports & Analytics</h1>
-            <p className="text-gray-600">System performance metrics and insights</p>
+            <h1 className="text-3xl font-bold text-gray-900">Rapports et Analyses</h1>
+            <p className="text-gray-600">Métriques de performance du système et insights</p>
           </div>
           <div className="flex gap-2">
             <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
@@ -112,15 +112,15 @@ export default function ReportsPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="week">This Week</SelectItem>
-                <SelectItem value="month">This Month</SelectItem>
-                <SelectItem value="quarter">This Quarter</SelectItem>
-                <SelectItem value="year">This Year</SelectItem>
+                <SelectItem value="week">Cette Semaine</SelectItem>
+                <SelectItem value="month">Ce Mois</SelectItem>
+                <SelectItem value="quarter">Ce Trimestre</SelectItem>
+                <SelectItem value="year">Cette Année</SelectItem>
               </SelectContent>
             </Select>
             <Button onClick={generateReport} className="bg-teal-500 hover:bg-teal-600">
               <Download className="h-4 w-4 mr-2" />
-              Export Report
+              Exporter le Rapport
             </Button>
           </div>
         </div>
@@ -128,13 +128,13 @@ export default function ReportsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Faults</CardTitle>
+              <CardTitle className="text-sm font-medium">Total des Pannes</CardTitle>
               <AlertTriangle className="h-4 w-4 text-red-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{reportData.faults.length}</div>
               <p className="text-xs text-muted-foreground">
-                {reportData.faults.filter((f) => f.status === "Resolved").length} resolved
+                {reportData.faults.filter((f) => f.status === "Resolved").length} résolues
               </p>
             </CardContent>
           </Card>
@@ -147,30 +147,30 @@ export default function ReportsPage() {
             <CardContent>
               <div className="text-2xl font-bold">{reportData.interventions.length}</div>
               <p className="text-xs text-muted-foreground">
-                {reportData.interventions.filter((i) => i.status === "Completed").length} completed
+                {reportData.interventions.filter((i) => i.status === "Completed").length} terminées
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Downtime</CardTitle>
+              <CardTitle className="text-sm font-medium">Temps d'Arrêt Total</CardTitle>
               <Clock className="h-4 w-4 text-orange-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalDowntime}h</div>
-              <p className="text-xs text-muted-foreground">Avg: {avgResolutionTime}h per fault</p>
+              <p className="text-xs text-muted-foreground">Moy: {avgResolutionTime}h par panne</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">System Uptime</CardTitle>
+              <CardTitle className="text-sm font-medium">Disponibilité du Système</CardTitle>
               <TrendingUp className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">98.5%</div>
-              <p className="text-xs text-muted-foreground">Above target (95%)</p>
+              <p className="text-xs text-muted-foreground">Au-dessus de l'objectif (95%)</p>
             </CardContent>
           </Card>
         </div>
@@ -178,8 +178,8 @@ export default function ReportsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Most Common Fault Types</CardTitle>
-              <CardDescription>Top 5 fault categories by frequency</CardDescription>
+              <CardTitle>Types de Pannes les Plus Courants</CardTitle>
+              <CardDescription>Top 5 des catégories de pannes par fréquence</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -201,7 +201,7 @@ export default function ReportsPage() {
                   </div>
                 ))}
                 {topFaultTypes.length === 0 && (
-                  <p className="text-gray-500 text-center py-4">No fault data available</p>
+                  <p className="text-gray-500 text-center py-4">Aucune donnée de panne disponible</p>
                 )}
               </div>
             </CardContent>
@@ -209,31 +209,31 @@ export default function ReportsPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Maintenance Performance</CardTitle>
-              <CardDescription>Preventive vs corrective maintenance ratio</CardDescription>
+              <CardTitle>Performance de Maintenance</CardTitle>
+              <CardDescription>Ratio maintenance préventive vs corrective</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Preventive Maintenance:</span>
+                  <span className="text-sm font-medium">Maintenance Préventive :</span>
                   <span className="text-sm text-green-600 font-medium">
                     {reportData.interventions.filter((i) => i.interventionType === "Preventive").length}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Corrective Maintenance:</span>
+                  <span className="text-sm font-medium">Maintenance Corrective :</span>
                   <span className="text-sm text-orange-600 font-medium">
                     {reportData.interventions.filter((i) => i.interventionType === "Curative").length}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Pending Tasks:</span>
+                  <span className="text-sm font-medium">Tâches en Attente :</span>
                   <span className="text-sm text-red-600 font-medium">
                     {reportData.maintenance.filter((m) => m.status === "Pending").length}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Active Alerts:</span>
+                  <span className="text-sm font-medium">Alertes Actives :</span>
                   <span className="text-sm text-red-600 font-medium">
                     {reportData.alerts.filter((a) => a.status === "active").length}
                   </span>

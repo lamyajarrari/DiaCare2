@@ -84,7 +84,7 @@ export default function AlertsPage() {
   }
 
   if (!user || isLoading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Chargement...</div>
   }
 
   return (
@@ -93,19 +93,19 @@ export default function AlertsPage() {
 
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Alert Center</h1>
-          <p className="text-gray-600">Monitor and respond to real-time machine alerts</p>
+          <h1 className="text-3xl font-bold text-gray-900">Centre d'Alertes</h1>
+          <p className="text-gray-600">Surveillez et répondez aux alertes de machines en temps réel</p>
         </div>
 
         <Card>
           <CardHeader>
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-              <CardTitle>Active Alerts</CardTitle>
+              <CardTitle>Alertes Actives</CardTitle>
               <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
-                    placeholder="Search alerts..."
+                    placeholder="Rechercher des alertes..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 w-full sm:w-48"
@@ -113,23 +113,23 @@ export default function AlertsPage() {
                 </div>
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-full sm:w-32">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder="Statut" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="resolved">Resolved</SelectItem>
+                    <SelectItem value="all">Tous les Statuts</SelectItem>
+                    <SelectItem value="active">Actif</SelectItem>
+                    <SelectItem value="resolved">Résolu</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select value={priorityFilter} onValueChange={setPriorityFilter}>
                   <SelectTrigger className="w-full sm:w-32">
-                    <SelectValue placeholder="Priority" />
+                    <SelectValue placeholder="Priorité" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Priority</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="all">Toutes Priorités</SelectItem>
+                    <SelectItem value="high">Élevée</SelectItem>
+                    <SelectItem value="medium">Moyenne</SelectItem>
+                    <SelectItem value="low">Faible</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -152,21 +152,26 @@ export default function AlertsPage() {
                                 : "outline"
                           }
                         >
-                          {alert.priority}
+                          {alert.priority === "high" ? "Élevée" : 
+                           alert.priority === "medium" ? "Moyenne" : 
+                           alert.priority === "low" ? "Faible" : alert.priority}
                         </Badge>
-                        <Badge variant={alert.status === "active" ? "destructive" : "default"}>{alert.status}</Badge>
+                        <Badge variant={alert.status === "active" ? "destructive" : "default"}>
+                          {alert.status === "active" ? "Actif" : 
+                           alert.status === "resolved" ? "Résolu" : alert.status}
+                        </Badge>
                       </div>
                       <p className="text-sm text-gray-600 mb-1">
-                        <strong>Type:</strong> {alert.type}
+                        <strong>Type :</strong> {alert.type}
                       </p>
                       <p className="text-sm text-gray-600 mb-1">
-                        <strong>Role:</strong> {alert.messageRole}
+                        <strong>Rôle :</strong> {alert.messageRole}
                       </p>
                       <p className="text-sm text-gray-600 mb-2">
-                        <strong>Required Action:</strong> {alert.requiredAction}
+                        <strong>Action Requise :</strong> {alert.requiredAction}
                       </p>
                       <p className="text-xs text-gray-500">
-                        Machine: {alert.machineId} • {new Date(alert.timestamp).toLocaleString()}
+                        Machine : {alert.machineId} • {new Date(alert.timestamp).toLocaleString()}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -177,7 +182,7 @@ export default function AlertsPage() {
                           className="bg-green-500 hover:bg-green-600"
                         >
                           <CheckCircle className="h-4 w-4 mr-1" />
-                          Resolve
+                          Résoudre
                         </Button>
                       )}
                     </div>
@@ -187,8 +192,8 @@ export default function AlertsPage() {
               {filteredAlerts.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   {searchTerm || statusFilter !== "all" || priorityFilter !== "all"
-                    ? "No alerts match your filters"
-                    : "No alerts found"}
+                    ? "Aucune alerte ne correspond à vos filtres"
+                    : "Aucune alerte trouvée"}
                 </div>
               )}
             </div>

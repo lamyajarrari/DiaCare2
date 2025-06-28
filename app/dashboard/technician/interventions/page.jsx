@@ -125,7 +125,7 @@ export default function InterventionsPage() {
       setFilteredInterventions(prev => prev.filter(i => i.id !== interventionId))
       setInterventionToDelete(null)
     } catch (error) {
-      setDeleteError(error.message || "Failed to delete intervention")
+      setDeleteError(error.message || "Échec de la suppression de l'intervention")
     } finally {
       setIsDeleting(false)
     }
@@ -163,7 +163,7 @@ export default function InterventionsPage() {
   }
 
   if (!user || isLoading) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Chargement...</div>
   }
 
   return (
@@ -174,14 +174,14 @@ export default function InterventionsPage() {
         <div className="mb-6 flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Interventions</h1>
-            <p className="text-gray-600">Manage technical intervention reports and history</p>
+            <p className="text-gray-600">Gérer les rapports d'intervention technique et l'historique</p>
           </div>
           <Button
             onClick={() => router.push("/dashboard/technician/interventions/new")}
             className="bg-teal-500 hover:bg-teal-600"
           >
             <Plus className="h-4 w-4 mr-2" />
-            New Intervention
+            Nouvelle Intervention
           </Button>
         </div>
 
@@ -192,7 +192,7 @@ export default function InterventionsPage() {
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search interventions..."
+                  placeholder="Rechercher des interventions..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -200,30 +200,30 @@ export default function InterventionsPage() {
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Filter by status" />
+                  <SelectValue placeholder="Filtrer par statut" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="In Progress">In Progress</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Cancelled">Cancelled</SelectItem>
+                  <SelectItem value="all">Tous les Statuts</SelectItem>
+                  <SelectItem value="Pending">En Attente</SelectItem>
+                  <SelectItem value="In Progress">En Cours</SelectItem>
+                  <SelectItem value="Completed">Terminé</SelectItem>
+                  <SelectItem value="Cancelled">Annulé</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Filter by type" />
+                  <SelectValue placeholder="Filtrer par type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="Preventive">Preventive</SelectItem>
+                  <SelectItem value="all">Tous les Types</SelectItem>
+                  <SelectItem value="Preventive">Préventive</SelectItem>
                   <SelectItem value="Curative">Curative</SelectItem>
-                  <SelectItem value="Emergency">Emergency</SelectItem>
+                  <SelectItem value="Emergency">Urgence</SelectItem>
                 </SelectContent>
               </Select>
               <div className="text-sm text-gray-500 flex items-center">
                 <Filter className="h-4 w-4 mr-2" />
-                {filteredInterventions.length} of {interventions.length} interventions
+                {filteredInterventions.length} sur {interventions.length} interventions
               </div>
             </div>
           </CardContent>
@@ -231,7 +231,7 @@ export default function InterventionsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Intervention History</CardTitle>
+            <CardTitle>Historique des Interventions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -242,39 +242,46 @@ export default function InterventionsPage() {
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="font-semibold">{intervention.equipmentDescription}</h3>
                         <Badge variant={intervention.interventionType === "Preventive" ? "default" : "secondary"}>
-                          {intervention.interventionType}
+                          {intervention.interventionType === "Preventive" ? "Préventive" : 
+                           intervention.interventionType === "Curative" ? "Curative" : 
+                           intervention.interventionType === "Emergency" ? "Urgence" : intervention.interventionType}
                         </Badge>
                         <Badge variant={getStatusBadgeVariant(intervention.status)}>
                           {getStatusIcon(intervention.status)}
-                          <span className="ml-1">{intervention.status}</span>
+                          <span className="ml-1">
+                            {intervention.status === "Pending" ? "En Attente" :
+                             intervention.status === "In Progress" ? "En Cours" :
+                             intervention.status === "Completed" ? "Terminé" :
+                             intervention.status === "Cancelled" ? "Annulé" : intervention.status}
+                          </span>
                         </Badge>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
                         <p>
-                          <strong>Request Date:</strong> {intervention.requestDate}
+                          <strong>Date de Demande :</strong> {intervention.requestDate}
                         </p>
                         <p>
-                          <strong>Department:</strong> {intervention.department}
+                          <strong>Département :</strong> {intervention.department}
                         </p>
                         <p>
-                          <strong>Requested By:</strong> {intervention.requestedBy}
+                          <strong>Demandé Par :</strong> {intervention.requestedBy}
                         </p>
                         <p>
-                          <strong>Technician:</strong> {intervention.technician || "Not assigned"}
+                          <strong>Technicien :</strong> {intervention.technician || "Non assigné"}
                         </p>
                         {intervention.timeSpent && (
                           <p>
-                            <strong>Time Spent:</strong> {intervention.timeSpent} hours
+                            <strong>Temps Passé :</strong> {intervention.timeSpent} heures
                           </p>
                         )}
                         {intervention.partsReplaced && (
                           <p>
-                            <strong>Parts Replaced:</strong> {intervention.partsReplaced}
+                            <strong>Pièces Remplacées :</strong> {intervention.partsReplaced}
                           </p>
                         )}
                       </div>
                       <p className="text-sm text-gray-600 mt-2">
-                        <strong>Problem:</strong> {intervention.problemDescription}
+                        <strong>Problème :</strong> {intervention.problemDescription}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -286,12 +293,12 @@ export default function InterventionsPage() {
                             onClick={() => openInterventionModal(intervention)}
                           >
                             <FileText className="h-4 w-4 mr-1" />
-                            View Details
+                            Voir les Détails
                           </Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                           <DialogHeader>
-                            <DialogTitle>Intervention Details</DialogTitle>
+                            <DialogTitle>Détails de l'Intervention</DialogTitle>
                           </DialogHeader>
                           {selectedIntervention && (
                             <div className="space-y-6">
@@ -301,16 +308,23 @@ export default function InterventionsPage() {
                                   <h3 className="font-semibold text-lg mb-2">{selectedIntervention.equipmentDescription}</h3>
                                   <div className="flex gap-2 mb-4">
                                     <Badge variant={selectedIntervention.interventionType === "Preventive" ? "default" : "secondary"}>
-                                      {selectedIntervention.interventionType}
+                                      {selectedIntervention.interventionType === "Preventive" ? "Préventive" : 
+                                       selectedIntervention.interventionType === "Curative" ? "Curative" : 
+                                       selectedIntervention.interventionType === "Emergency" ? "Urgence" : selectedIntervention.interventionType}
                                     </Badge>
                                     <Badge variant={getStatusBadgeVariant(selectedIntervention.status)}>
                                       {getStatusIcon(selectedIntervention.status)}
-                                      <span className="ml-1">{selectedIntervention.status}</span>
+                                      <span className="ml-1">
+                                        {selectedIntervention.status === "Pending" ? "En Attente" :
+                                         selectedIntervention.status === "In Progress" ? "En Cours" :
+                                         selectedIntervention.status === "Completed" ? "Terminé" :
+                                         selectedIntervention.status === "Cancelled" ? "Annulé" : selectedIntervention.status}
+                                      </span>
                                     </Badge>
                                   </div>
                                 </div>
                                 <div className="text-right">
-                                  <p className="text-sm text-gray-500">Inventory Number</p>
+                                  <p className="text-sm text-gray-500">Numéro d'Inventaire</p>
                                   <p className="font-medium">{selectedIntervention.inventoryNumber}</p>
                                 </div>
                               </div>
@@ -318,25 +332,25 @@ export default function InterventionsPage() {
                               {/* Request Information */}
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                  <h4 className="font-semibold mb-2">Request Information</h4>
+                                  <h4 className="font-semibold mb-2">Informations de Demande</h4>
                                   <div className="space-y-2 text-sm">
-                                    <p><strong>Request Date:</strong> {selectedIntervention.requestDate}</p>
-                                    <p><strong>Department:</strong> {selectedIntervention.department}</p>
-                                    <p><strong>Requested By:</strong> {selectedIntervention.requestedBy}</p>
-                                    <p><strong>Requested Intervention:</strong> {selectedIntervention.requestedIntervention}</p>
+                                    <p><strong>Date de Demande :</strong> {selectedIntervention.requestDate}</p>
+                                    <p><strong>Département :</strong> {selectedIntervention.department}</p>
+                                    <p><strong>Demandé Par :</strong> {selectedIntervention.requestedBy}</p>
+                                    <p><strong>Intervention Demandée :</strong> {selectedIntervention.requestedIntervention}</p>
                                   </div>
                                 </div>
                                 <div>
-                                  <h4 className="font-semibold mb-2">Timeline</h4>
+                                  <h4 className="font-semibold mb-2">Chronologie</h4>
                                   <div className="space-y-2 text-sm">
                                     {selectedIntervention.arrivalAtWorkshop && (
-                                      <p><strong>Arrival at Workshop:</strong> {selectedIntervention.arrivalAtWorkshop}</p>
+                                      <p><strong>Arrivée à l'Atelier :</strong> {selectedIntervention.arrivalAtWorkshop}</p>
                                     )}
                                     {selectedIntervention.datePerformed && (
-                                      <p><strong>Date Performed:</strong> {selectedIntervention.datePerformed}</p>
+                                      <p><strong>Date d'Exécution :</strong> {selectedIntervention.datePerformed}</p>
                                     )}
                                     {selectedIntervention.returnToService && (
-                                      <p><strong>Return to Service:</strong> {selectedIntervention.returnToService}</p>
+                                      <p><strong>Retour en Service :</strong> {selectedIntervention.returnToService}</p>
                                     )}
                                   </div>
                                 </div>
@@ -344,13 +358,13 @@ export default function InterventionsPage() {
 
                               {/* Problem and Solution */}
                               <div>
-                                <h4 className="font-semibold mb-2">Problem Description</h4>
+                                <h4 className="font-semibold mb-2">Description du Problème</h4>
                                 <p className="text-sm bg-gray-50 p-3 rounded">{selectedIntervention.problemDescription}</p>
                               </div>
 
                               {selectedIntervention.tasksCompleted && (
                                 <div>
-                                  <h4 className="font-semibold mb-2">Tasks Completed</h4>
+                                  <h4 className="font-semibold mb-2">Tâches Accomplies</h4>
                                   <p className="text-sm bg-gray-50 p-3 rounded">{selectedIntervention.tasksCompleted}</p>
                                 </div>
                               )}
@@ -360,19 +374,19 @@ export default function InterventionsPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                   {selectedIntervention.partsReplaced && (
                                     <div>
-                                      <h4 className="font-semibold mb-2">Parts Replaced</h4>
+                                      <h4 className="font-semibold mb-2">Pièces Remplacées</h4>
                                       <p className="text-sm">{selectedIntervention.partsReplaced}</p>
                                     </div>
                                   )}
                                   {selectedIntervention.partDescription && (
                                     <div>
-                                      <h4 className="font-semibold mb-2">Part Description</h4>
+                                      <h4 className="font-semibold mb-2">Description de la Pièce</h4>
                                       <p className="text-sm">{selectedIntervention.partDescription}</p>
                                     </div>
                                   )}
                                   {selectedIntervention.price && (
                                     <div>
-                                      <h4 className="font-semibold mb-2">Cost</h4>
+                                      <h4 className="font-semibold mb-2">Coût</h4>
                                       <p className="text-sm font-medium">{selectedIntervention.price}</p>
                                     </div>
                                   )}
@@ -382,16 +396,16 @@ export default function InterventionsPage() {
                               {/* Technician Information */}
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                  <h4 className="font-semibold mb-2">Technician Information</h4>
+                                  <h4 className="font-semibold mb-2">Informations du Technicien</h4>
                                   <div className="space-y-2 text-sm">
-                                    <p><strong>Technician:</strong> {selectedIntervention.technician || "Not assigned"}</p>
+                                    <p><strong>Technicien :</strong> {selectedIntervention.technician || "Non assigné"}</p>
                                     {selectedIntervention.timeSpent && (
-                                      <p><strong>Time Spent:</strong> {selectedIntervention.timeSpent} hours</p>
+                                      <p><strong>Temps Passé :</strong> {selectedIntervention.timeSpent} heures</p>
                                     )}
                                   </div>
                                 </div>
                                 <div>
-                                  <h4 className="font-semibold mb-2">Status Management</h4>
+                                  <h4 className="font-semibold mb-2">Gestion du Statut</h4>
                                   <div className="space-y-2">
                                     <Select 
                                       value={selectedIntervention.status} 
@@ -402,10 +416,10 @@ export default function InterventionsPage() {
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
-                                        <SelectItem value="Pending">Pending</SelectItem>
-                                        <SelectItem value="In Progress">In Progress</SelectItem>
-                                        <SelectItem value="Completed">Completed</SelectItem>
-                                        <SelectItem value="Cancelled">Cancelled</SelectItem>
+                                        <SelectItem value="Pending">En Attente</SelectItem>
+                                        <SelectItem value="In Progress">En Cours</SelectItem>
+                                        <SelectItem value="Completed">Terminé</SelectItem>
+                                        <SelectItem value="Cancelled">Annulé</SelectItem>
                                       </SelectContent>
                                     </Select>
                                   </div>
@@ -421,7 +435,7 @@ export default function InterventionsPage() {
                         disabled={isDeleting && interventionToDelete === intervention.id}
                         onClick={() => setInterventionToDelete(intervention.id)}
                       >
-                        <Trash2 className="h-4 w-4 mr-1" /> Delete
+                        <Trash2 className="h-4 w-4 mr-1" /> Supprimer
                       </Button>
                     </div>
                   </div>
@@ -429,7 +443,7 @@ export default function InterventionsPage() {
               ))}
               {filteredInterventions.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
-                  {interventions.length === 0 ? "No interventions recorded yet" : "No interventions match your filters"}
+                  {interventions.length === 0 ? "Aucune intervention enregistrée pour le moment" : "Aucune intervention ne correspond à vos filtres"}
                 </div>
               )}
             </div>
@@ -441,16 +455,16 @@ export default function InterventionsPage() {
           <Dialog open={!!interventionToDelete} onOpenChange={() => setInterventionToDelete(null)}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Delete Intervention</DialogTitle>
+                <DialogTitle>Supprimer l'Intervention</DialogTitle>
               </DialogHeader>
-              <div>Are you sure you want to delete this intervention?</div>
+              <div>Êtes-vous sûr de vouloir supprimer cette intervention ?</div>
               {deleteError && <div className="text-red-600 text-sm mt-2">{deleteError}</div>}
               <div className="flex justify-end gap-2 mt-4">
                 <Button variant="outline" onClick={() => setInterventionToDelete(null)} disabled={isDeleting}>
-                  Cancel
+                  Annuler
                 </Button>
                 <Button variant="destructive" onClick={() => handleDeleteIntervention(interventionToDelete)} disabled={isDeleting}>
-                  {isDeleting ? "Deleting..." : "Delete"}
+                  {isDeleting ? "Suppression..." : "Supprimer"}
                 </Button>
               </div>
             </DialogContent>
