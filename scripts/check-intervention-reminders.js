@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { sendAlertEmail } = require("../lib/email.js");
+const { sendAlertEmail } = require("../lib/email.ts");
 
 const prisma = new PrismaClient();
 
