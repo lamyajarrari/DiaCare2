@@ -7,8 +7,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Clock, CheckCircle, AlertTriangle, Info } from "lucide-react"
-import Navbar from "@/components/layout/navbar"
-import api from "@/lib/api"
+import { Navbar } from "@/components/layout/navbar"
+import { api } from "@/lib/api"
 
 export default function TestNotificationsInterventionPage() {
   const [user, setUser] = useState(null)
