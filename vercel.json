@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install",
   "framework": "nextjs",
   "env": {
     "DATABASE_URL": "postgresql://neondb_owner:npg_RALrXG3hNQw9@ep-delicate-pine-a832b17h-pooler.eastus2.azure.neon.tech/neondb?sslmode=require&channel_binding=require"
