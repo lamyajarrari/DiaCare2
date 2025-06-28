@@ -1,0 +1,195 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      String   // "patient", "technician", "admin"
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Role-specific IDs
+  patientId    String? @unique
+  technicianId String? @unique
+  adminId      String? @unique
+
+  // Relations
+  faults              Fault[]
+  interventions       Intervention[]
+  maintenanceControls MaintenanceControl[]
+
+  @@map("users")
+}
+
+model Machine {
+  id              String    @id
+  name            String
+  inventoryNumber String    @unique
+  department      String
+  status          String
+  lastMaintenance DateTime?
+  nextMaintenance DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  faults              Fault[]
+  alerts              Alert[]
+  maintenanceSchedule MaintenanceSchedule[]
+  maintenanceControls MaintenanceControl[]
+
+  @@map("machines")
+}
+
+model Fault {
+  id               Int      @id @default(autoincrement())
+  date             String
+  faultType        String
+  description      String
+  downtime         String
+  rootCause        String
+  correctiveAction String
+  status           String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Foreign keys
+  patientId String
+  machineId String
+
+  // Relations
+  patient User    @relation(fields: [patientId], references: [patientId])
+  machine Machine @relation(fields: [machineId], references: [id])
+
+  @@map("faults")
+}
+
+model Alert {
+  id             Int      @id @default(autoincrement())
+  message        String
+  messageRole    String
+  type           String
+  requiredAction String
+  priority       String   // "low", "medium", "high", "critical"
+  timestamp      DateTime
+  status         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Foreign keys
+  machineId String
+
+  // Relations
+  machine Machine @relation(fields: [machineId], references: [id])
+
+  @@map("alerts")
+}
+
+model Intervention {
+  id                     Int      @id @default(autoincrement())
+  requestDate            String
+  requestedIntervention  String
+  arrivalAtWorkshop      String?
+  department             String
+  requestedBy            String
+  returnToService        String?
+  equipmentDescription   String
+  inventoryNumber        String
+  problemDescription     String
+  interventionType       String
+  datePerformed          String?
+  tasksCompleted         String?
+  partsReplaced          String?
+  partDescription        String?
+  price                  String?
+  technician             String?
+  timeSpent              String?
+  status                 String   @default("Pending")
+  notifications          String?  // "3min", "3months", "6months", "1year"
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  // Foreign keys
+  technicianId String?
+
+  // Relations
+  technicianUser User? @relation(fields: [technicianId], references: [technicianId])
+
+  @@map("interventions")
+}
+
+model MaintenanceSchedule {
+  id          Int       @id @default(autoincrement())
+  type        String
+  tasks       String    // JSON array stored as string
+  dueDate     String
+  status      String    @default("Pending")
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Foreign keys
+  machineId String
+
+  // Relations
+  machine Machine @relation(fields: [machineId], references: [id])
+
+  @@map("maintenance_schedule")
+}
+
+model MaintenanceControl {
+  id                Int      @id @default(autoincrement())
+  machineId         String
+  technicianId      String
+  controlDate       DateTime
+  controlType       String   // "3_months", "6_months", "1_year"
+  nextControlDate   DateTime
+  frequencyInMonths Int      // 3, 6, 12, etc.
+  status            String   @default("completed") // "completed", "pending", "overdue"
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  machine     Machine @relation(fields: [machineId], references: [id])
+  technician  User    @relation(fields: [technicianId], references: [technicianId])
+
+  @@map("maintenance_controls")
+}
+
+model Invoice {
+  id                  Int      @id @default(autoincrement())
+  patientName         String
+  medicalRecordNumber String
+  sessionDate         DateTime
+  sessionTimeFrom     String?
+  sessionTimeTo       String?
+  responsibleDoctor   String
+  dialysisFee         Float    @default(0)
+  generatorDialyzer   Float    @default(0)
+  medConsumables      Float    @default(0)
+  nursingCare         Float    @default(0)
+  adminFees           Float    @default(0)
+  taxPercentage       Float    @default(0)
+  paymentMethod       String
+  paymentReference    String?
+  observations        String?
+  subTotal            Float    @default(0)
+  taxAmount           Float    @default(0)
+  totalToPay          Float    @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("invoices")
+} 

@@ -1,0 +1,462 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Plus, FileText, Search, Filter, Clock, CheckCircle, XCircle, AlertCircle, Trash2 } from "lucide-react"
+import { Navbar } from "@/components/layout/navbar"
+import { api } from "@/lib/api"
+
+export default function InterventionsPage() {
+  const [user, setUser] = useState(null)
+  const [interventions, setInterventions] = useState([])
+  const [filteredInterventions, setFilteredInterventions] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedIntervention, setSelectedIntervention] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [typeFilter, setTypeFilter] = useState("all")
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState("")
+  const [interventionToDelete, setInterventionToDelete] = useState(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    const userData = localStorage.getItem("user")
+    if (!userData) {
+      router.push("/login")
+      return
+    }
+
+    const parsedUser = JSON.parse(userData)
+    if (parsedUser.role !== "technician") {
+      router.push("/login")
+      return
+    }
+
+    setUser(parsedUser)
+    loadInterventions()
+  }, [router])
+
+  useEffect(() => {
+    filterInterventions()
+  }, [interventions, searchTerm, statusFilter, typeFilter])
+
+  const loadInterventions = async () => {
+    try {
+      const interventionsData = await api.getInterventions()
+      setInterventions(interventionsData)
+    } catch (error) {
+      console.error("Error loading interventions:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const filterInterventions = () => {
+    let filtered = interventions
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(intervention =>
+        intervention.equipmentDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        intervention.problemDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        intervention.requestedBy.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        intervention.department.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+
+    // Status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(intervention => intervention.status === statusFilter)
+    }
+
+    // Type filter
+    if (typeFilter !== "all") {
+      filtered = filtered.filter(intervention => intervention.interventionType === typeFilter)
+    }
+
+    setFilteredInterventions(filtered)
+  }
+
+  const updateInterventionStatus = async (interventionId, newStatus) => {
+    setIsUpdatingStatus(true)
+    try {
+      // Update the intervention status in the database
+      const response = await fetch(`/api/interventions/${interventionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      })
+
+      if (response.ok) {
+        // Update local state
+        setInterventions(prev => prev.map(intervention =>
+          intervention.id === interventionId
+            ? { ...intervention, status: newStatus }
+            : intervention
+        ))
+        
+        // Update selected intervention if it's the one being updated
+        if (selectedIntervention && selectedIntervention.id === interventionId) {
+          setSelectedIntervention(prev => ({ ...prev, status: newStatus }))
+        }
+      }
+    } catch (error) {
+      console.error("Error updating intervention status:", error)
+    } finally {
+      setIsUpdatingStatus(false)
+    }
+  }
+
+  const handleDeleteIntervention = async (interventionId) => {
+    setIsDeleting(true)
+    setDeleteError("")
+    try {
+      await api.deleteIntervention(interventionId)
+      setInterventions(prev => prev.filter(i => i.id !== interventionId))
+      setFilteredInterventions(prev => prev.filter(i => i.id !== interventionId))
+      setInterventionToDelete(null)
+    } catch (error) {
+      setDeleteError(error.message || "Failed to delete intervention")
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case "Completed":
+        return <CheckCircle className="h-4 w-4 text-green-500" />
+      case "In Progress":
+        return <Clock className="h-4 w-4 text-blue-500" />
+      case "Cancelled":
+        return <XCircle className="h-4 w-4 text-red-500" />
+      default:
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />
+    }
+  }
+
+  const getStatusBadgeVariant = (status) => {
+    switch (status) {
+      case "Completed":
+        return "default"
+      case "In Progress":
+        return "secondary"
+      case "Cancelled":
+        return "destructive"
+      default:
+        return "outline"
+    }
+  }
+
+  const openInterventionModal = (intervention) => {
+    setSelectedIntervention(intervention)
+    setIsModalOpen(true)
+  }
+
+  if (!user || isLoading) {
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar userRole={user.role} userName={user.name} />
+
+      <div className="p-6">
+        <div className="mb-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Interventions</h1>
+            <p className="text-gray-600">Manage technical intervention reports and history</p>
+          </div>
+          <Button
+            onClick={() => router.push("/dashboard/technician/interventions/new")}
+            className="bg-teal-500 hover:bg-teal-600"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Intervention
+          </Button>
+        </div>
+
+        {/* Filters and Search */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search interventions..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter by type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="Preventive">Preventive</SelectItem>
+                  <SelectItem value="Curative">Curative</SelectItem>
+                  <SelectItem value="Emergency">Emergency</SelectItem>
+                </SelectContent>
+              </Select>
+              <div className="text-sm text-gray-500 flex items-center">
+                <Filter className="h-4 w-4 mr-2" />
+                {filteredInterventions.length} of {interventions.length} interventions
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Intervention History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {filteredInterventions.map((intervention) => (
+                <div key={intervention.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-semibold">{intervention.equipmentDescription}</h3>
+                        <Badge variant={intervention.interventionType === "Preventive" ? "default" : "secondary"}>
+                          {intervention.interventionType}
+                        </Badge>
+                        <Badge variant={getStatusBadgeVariant(intervention.status)}>
+                          {getStatusIcon(intervention.status)}
+                          <span className="ml-1">{intervention.status}</span>
+                        </Badge>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                        <p>
+                          <strong>Request Date:</strong> {intervention.requestDate}
+                        </p>
+                        <p>
+                          <strong>Department:</strong> {intervention.department}
+                        </p>
+                        <p>
+                          <strong>Requested By:</strong> {intervention.requestedBy}
+                        </p>
+                        <p>
+                          <strong>Technician:</strong> {intervention.technician || "Not assigned"}
+                        </p>
+                        {intervention.timeSpent && (
+                          <p>
+                            <strong>Time Spent:</strong> {intervention.timeSpent} hours
+                          </p>
+                        )}
+                        {intervention.partsReplaced && (
+                          <p>
+                            <strong>Parts Replaced:</strong> {intervention.partsReplaced}
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-2">
+                        <strong>Problem:</strong> {intervention.problemDescription}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => openInterventionModal(intervention)}
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            View Details
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Intervention Details</DialogTitle>
+                          </DialogHeader>
+                          {selectedIntervention && (
+                            <div className="space-y-6">
+                              {/* Header Information */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <h3 className="font-semibold text-lg mb-2">{selectedIntervention.equipmentDescription}</h3>
+                                  <div className="flex gap-2 mb-4">
+                                    <Badge variant={selectedIntervention.interventionType === "Preventive" ? "default" : "secondary"}>
+                                      {selectedIntervention.interventionType}
+                                    </Badge>
+                                    <Badge variant={getStatusBadgeVariant(selectedIntervention.status)}>
+                                      {getStatusIcon(selectedIntervention.status)}
+                                      <span className="ml-1">{selectedIntervention.status}</span>
+                                    </Badge>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-sm text-gray-500">Inventory Number</p>
+                                  <p className="font-medium">{selectedIntervention.inventoryNumber}</p>
+                                </div>
+                              </div>
+
+                              {/* Request Information */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="font-semibold mb-2">Request Information</h4>
+                                  <div className="space-y-2 text-sm">
+                                    <p><strong>Request Date:</strong> {selectedIntervention.requestDate}</p>
+                                    <p><strong>Department:</strong> {selectedIntervention.department}</p>
+                                    <p><strong>Requested By:</strong> {selectedIntervention.requestedBy}</p>
+                                    <p><strong>Requested Intervention:</strong> {selectedIntervention.requestedIntervention}</p>
+                                  </div>
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold mb-2">Timeline</h4>
+                                  <div className="space-y-2 text-sm">
+                                    {selectedIntervention.arrivalAtWorkshop && (
+                                      <p><strong>Arrival at Workshop:</strong> {selectedIntervention.arrivalAtWorkshop}</p>
+                                    )}
+                                    {selectedIntervention.datePerformed && (
+                                      <p><strong>Date Performed:</strong> {selectedIntervention.datePerformed}</p>
+                                    )}
+                                    {selectedIntervention.returnToService && (
+                                      <p><strong>Return to Service:</strong> {selectedIntervention.returnToService}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Problem and Solution */}
+                              <div>
+                                <h4 className="font-semibold mb-2">Problem Description</h4>
+                                <p className="text-sm bg-gray-50 p-3 rounded">{selectedIntervention.problemDescription}</p>
+                              </div>
+
+                              {selectedIntervention.tasksCompleted && (
+                                <div>
+                                  <h4 className="font-semibold mb-2">Tasks Completed</h4>
+                                  <p className="text-sm bg-gray-50 p-3 rounded">{selectedIntervention.tasksCompleted}</p>
+                                </div>
+                              )}
+
+                              {/* Parts and Cost */}
+                              {(selectedIntervention.partsReplaced || selectedIntervention.partDescription || selectedIntervention.price) && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  {selectedIntervention.partsReplaced && (
+                                    <div>
+                                      <h4 className="font-semibold mb-2">Parts Replaced</h4>
+                                      <p className="text-sm">{selectedIntervention.partsReplaced}</p>
+                                    </div>
+                                  )}
+                                  {selectedIntervention.partDescription && (
+                                    <div>
+                                      <h4 className="font-semibold mb-2">Part Description</h4>
+                                      <p className="text-sm">{selectedIntervention.partDescription}</p>
+                                    </div>
+                                  )}
+                                  {selectedIntervention.price && (
+                                    <div>
+                                      <h4 className="font-semibold mb-2">Cost</h4>
+                                      <p className="text-sm font-medium">{selectedIntervention.price}</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Technician Information */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="font-semibold mb-2">Technician Information</h4>
+                                  <div className="space-y-2 text-sm">
+                                    <p><strong>Technician:</strong> {selectedIntervention.technician || "Not assigned"}</p>
+                                    {selectedIntervention.timeSpent && (
+                                      <p><strong>Time Spent:</strong> {selectedIntervention.timeSpent} hours</p>
+                                    )}
+                                  </div>
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold mb-2">Status Management</h4>
+                                  <div className="space-y-2">
+                                    <Select 
+                                      value={selectedIntervention.status} 
+                                      onValueChange={(value) => updateInterventionStatus(selectedIntervention.id, value)}
+                                      disabled={isUpdatingStatus}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="Pending">Pending</SelectItem>
+                                        <SelectItem value="In Progress">In Progress</SelectItem>
+                                        <SelectItem value="Completed">Completed</SelectItem>
+                                        <SelectItem value="Cancelled">Cancelled</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={isDeleting && interventionToDelete === intervention.id}
+                        onClick={() => setInterventionToDelete(intervention.id)}
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" /> Delete
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filteredInterventions.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  {interventions.length === 0 ? "No interventions recorded yet" : "No interventions match your filters"}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Dialog de confirmation de suppression */}
+        {interventionToDelete && (
+          <Dialog open={!!interventionToDelete} onOpenChange={() => setInterventionToDelete(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Intervention</DialogTitle>
+              </DialogHeader>
+              <div>Are you sure you want to delete this intervention?</div>
+              {deleteError && <div className="text-red-600 text-sm mt-2">{deleteError}</div>}
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={() => setInterventionToDelete(null)} disabled={isDeleting}>
+                  Cancel
+                </Button>
+                <Button variant="destructive" onClick={() => handleDeleteIntervention(interventionToDelete)} disabled={isDeleting}>
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
+      </div>
+    </div>
+  )
+}
